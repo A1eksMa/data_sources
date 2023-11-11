@@ -1,0 +1,13 @@
+# Импортируем функции
+# Формируем список доступных функций
+functions_list = []
+
+for filename in os.listdir("./lib/"):
+    if fnmatch.fnmatch(filename, '*.py') or fnmatch.fnmatch(filename, '*.PY'):
+        functions_list.append('./lib/'+filename)
+
+# Применяем обработчик загрузки к каждому файлу
+for i in range(len(functions_list)):
+    exec(open(functions_list[i]).read())
+    
+del functions_list

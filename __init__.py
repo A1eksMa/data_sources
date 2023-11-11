@@ -1,18 +1,6 @@
-# Импортируем библиотеки и зависимоcти python
-import numpy as np
-import pandas as pd
-
-import json
-
-import datetime as dt
-from datetime import datetime
-import time as tm
-
-import os
-import fnmatch
-
-import warnings
-warnings.filterwarnings('ignore')
+# import libraries
+exec(open('./lib/libraries').read())
+exec(open('./lib/functions').read())
 
 class Sources():
     '''
