@@ -1,6 +1,8 @@
 # import libraries
-exec(open('./lib/libraries').read())
-exec(open('./lib/functions').read())
+import os
+path_data_sources = os.path.dirname(os.path.abspath(__file__))
+exec(open(path_data_sources + '/lib/libraries').read())
+exec(open(path_data_sources +'/lib/functions').read())
 
 class Sources():
     '''
