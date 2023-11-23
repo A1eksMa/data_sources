@@ -10,7 +10,6 @@ import time as tm
 
 import os
 import fnmatch
-import inspect
 
 import plotly.express as px 
 from dash import Dash, html, dcc
