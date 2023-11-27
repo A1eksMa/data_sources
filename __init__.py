@@ -163,6 +163,7 @@ class Sources():
         dictionary = dict(zip(['Header', 'Attributes', 'Sources'],
                               [header, attributes, sources]))
 
+        makedir(self.sources_path())
         with open(self.index_path(), 'w') as file:
             json.dump(dictionary, file, ensure_ascii=False, indent=4)
 
@@ -170,7 +171,7 @@ class Sources():
     def save_sources_as(self):
         ''' Save a new copy of data sources (rename and replace it) '''
         self.set_attributes()
-        self.save()
+        self.save_sources()
 
 
     def print_info(self):
@@ -212,6 +213,10 @@ class Source(Sources):
 
         # Attributes
         super().__init__()
+        self.path = super().sources_path()[0:-1]
         self.name = None
         self.description = None
-        self.path = './sources'
+        self.sources = None
+
+        self.attributes = {}
+
