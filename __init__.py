@@ -412,3 +412,29 @@ def close_sources(src):
     del src
 
 
+class Indicator():
+    ''' Indicator of source '''
+    def __init__(self, name, description):
+        ''' Constructor of indicator '''
+
+        # Attributes from source
+        self.source_name = 'source'
+        self.source_path = './sources'
+        self.source_key = []
+
+        # Attributes of indicator
+        self.name = name
+        self.description = description
+        self.rules = []
+        self.positions = None
+
+
+class Position():
+    ''' One position of indicator
+        Row: key, value, dt '''
+
+    def __init__(self, key, value, dt):
+        self.key = key
+        self.value = value
+        self.dt = dt
+
