@@ -180,6 +180,20 @@ class Sources():
         print('Attributes:', self.attributes())
         print('Sources:', self.sources)
 
+    
+    def check_updates(self):
+        list_of_updates = []
+        for filename in os.listdir(self.upload):
+            if (fnmatch.fnmatch(filename, '*.XLSX') or
+                fnmatch.fnmatch(filename, '*.xlsx') or
+                fnmatch.fnmatch(filename, '*.XLS') or
+                fnmatch.fnmatch(filename, '*.xls')):
+                list_of_updates.append(self.upload + filename)
+        if len(list_of_updates)>0:
+            return list_of_updates
+        else:
+            return False
+
 
 # Some actions with Sources()-class objects
 
