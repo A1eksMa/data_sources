@@ -400,7 +400,7 @@ def open_source(name='source', path='./sources'):
     return src
 
 
-def save_sources(src):
+def save_source(src):
     src.save_source()
 
 
@@ -408,7 +408,7 @@ def save_source_as(src):
     src.save_source_as()
 
 
-def close_sources(src):
+def close_source(src):
     del src
 
 
