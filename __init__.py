@@ -146,18 +146,18 @@ class Core():
         '''
         path_name = path + name + '/'
         if 'index.json' in os.listdir(path_name):
-            with open(path_name + 'index.json', 'r') as index:
-                json_attributes = json.load(index)
+            with open(path_name + 'index.json', 'r') as index_json:
+                index_json = json.load(index_json)
 
             # Load attributes
-            attributes = json_attributes.get('Attributes')
+            attributes = index_json.get('Attributes')
             self.path = attributes.get('path')
             self.name = attributes.get('name')
             self.description = attributes.get('description')
             self.index = attributes.get('index')
 
-            # Load sources
-            self.properties = json_attributes.get('Properties')
+            # Load properties
+            self.properties = index_json.get('Properties')
 
             # Set log changes
             self.changes = []
