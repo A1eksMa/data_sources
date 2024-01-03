@@ -21,6 +21,151 @@ warnings.filterwarnings('ignore')
 path_data_sources = os.path.dirname(os.path.abspath(__file__))
 exec(open(path_data_sources +'/lib/functions').read())
 
+
+class Core():
+    '''
+    It's an abstract class
+    '''
+
+    def __init__(self, path, name, description):
+        ''' Set up defaults attributes '''
+
+        # Main attributes (single variables)
+        self.path = path
+        self.name = name
+        self.description = description
+        self.index = 'index.json'
+
+        # Properties (group variables)
+        self.properties = []
+
+    # Aggregate main attributes
+    
+    def path_name(self):
+        ''' Construct a full path to sources index-file '''
+        return self.path + self.name + '/'
+
+
+    def path_name_index(self):
+        ''' Construct a full path to sources index-file '''
+        return self.path_name() + self.index
+
+
+    def header(self):
+        ''' Construct info '''
+        header = dict(
+                 zip(
+                 ['Name',
+                  'Description',
+                  'Path to index-file'],
+                 [self.name,
+                  self.description,
+                  self.path_name_index()]))
+        return header
+    
+        
+    def __repr__(self):
+        ''' Construct info '''
+        return 'Name: ' + self.name + '\n'\
+               'Description: ' + self.description + '\n'\
+               'Path to index-file: ' + self.path_name_index() + '\n'
+
+
+    def info(self):
+        ''' Output abstract information about data sources '''
+        print(self)
+        print('Attributes:', self.main_attributes())
+        print('Properties:', self.properties)
+
+
+    def main_attributes(self):
+        ''' Construct dictionary of main attributes '''
+        return dict(zip(['path', 'name', 'description', 'index'],
+                        [self.path, self.name, self.description, self.index]))
+ 
+    
+    def main_dictionary(self):
+        ''' Construct object as dictionary '''
+        header = self.header()
+        attributes = self.main_attributes()
+        properties = self.properties
+        dictionary = dict(zip(['Header', 'Attributes', 'Properties'],
+                              [header, attributes, properties]))
+        return dictionary
+    
+
+    # Methods, that change main attributes
+
+    def set_new_path(self):
+        ''' Set a new path '''
+        self.path = input('Set path: ')
+
+
+    def set_new_name(self):
+        ''' Set a new name '''
+        self.name = input('Set name: ')
+
+
+    def set_new_description(self):
+        ''' Set a new descripption '''
+        self.description = input('Input a new description: ')
+
+
+    def set_attributes(self,
+                       path=True,
+                       name=True,
+                       description=True):
+        ''' Set a new group parametres '''
+        if path: self.set_new_path()
+        if name: self.set_new_name()
+        if description: self.set_new_description()
+
+    # Physical operations with object (open, save, remove, rename and other)
+    
+    def save(self):
+        ''' Save data to hard drive '''
+        makedir(self.path_name())
+        with open(self.path_name_index(), 'w') as file:
+            json.dump(self.main_dictionary(), file, ensure_ascii=False, indent=4)
+
+    def close(self):
+        ''' Remove object '''
+        pass
+
+
+    def save_as(self):
+        ''' Save a new copy of data (rename and save it) '''
+        self.set_attributes()
+        self.save()
+
+
+    def open(self, path, name):
+        '''
+        Open existing index-file and upload data to buffer
+        Set a change-counter in zero
+        '''
+        path_name = path + name + '/'
+        if 'index.json' in os.listdir(path_name):
+            with open(path_name + 'index.json', 'r') as index:
+                json_attributes = json.load(index)
+
+            # Load attributes
+            attributes = json_attributes.get('Attributes')
+            self.path = attributes.get('path')
+            self.name = attributes.get('name')
+            self.description = attributes.get('description')
+            self.index = attributes.get('index')
+
+            # Load sources
+            self.properties = json_attributes.get('Properties')
+
+            # Set log changes
+            self.changes = []
+
+        else:
+            print('File "index.json" not exist')
+            
+
 class Sources():
     '''
     It's a main class
