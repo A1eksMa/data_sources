@@ -27,7 +27,13 @@ class Core():
     It's an abstract class
     '''
 
-    def __init__(self, path, name, description):
+    
+    def __new__(cls, *args, **kwargs):
+        ''' Construct new object '''
+        return super().__new__(cls)
+
+
+    def __init__(self, path='.', name='', description='Default description'):
         ''' Set up defaults attributes '''
 
         # Main attributes (single variables)
@@ -36,18 +42,26 @@ class Core():
         self.description = description
         self.index = 'index.json'
 
-        # Properties (group variables)
-        self.properties = []
+        self.inners = self.get_inners()
+
+
+    def get_inners(self):
+        pass
+        return {}
+
+
+    def __del__(self):
+        del self.path, self.name, self.description, self.index
 
     # Aggregate main attributes
     
     def path_name(self):
-        ''' Construct a full path to sources index-file '''
-        return self.path + self.name + '/'
+        ''' Construct a full path  '''
+        return str(self.path) + str(self.name) + '/'
 
 
     def path_name_index(self):
-        ''' Construct a full path to sources index-file '''
+        ''' Construct a full path to index-file '''
         return self.path_name() + self.index
 
 
@@ -65,9 +79,9 @@ class Core():
     
         
     def __repr__(self):
-        ''' Construct info '''
-        return 'Name: ' + self.name + '\n'\
-               'Description: ' + self.description + '\n'\
+        ''' Construct info to print '''
+        return 'Name: ' + str(self.name) + '\n'\
+               'Description: ' + str(self.description) + '\n'\
                'Path to index-file: ' + self.path_name_index() + '\n'
 
 
@@ -75,7 +89,6 @@ class Core():
         ''' Output abstract information about data sources '''
         print(self)
         print('Attributes:', self.main_attributes())
-        print('Properties:', self.properties)
 
 
     def main_attributes(self):
@@ -88,9 +101,8 @@ class Core():
         ''' Construct object as dictionary '''
         header = self.header()
         attributes = self.main_attributes()
-        properties = self.properties
-        dictionary = dict(zip(['Header', 'Attributes', 'Properties'],
-                              [header, attributes, properties]))
+        dictionary = dict(zip(['Header', 'Attributes'],
+                              [header, attributes]))
         return dictionary
     
 
@@ -107,7 +119,7 @@ class Core():
 
 
     def set_new_description(self):
-        ''' Set a new descripption '''
+        ''' Set a new description '''
         self.description = input('Input a new description: ')
 
 
@@ -128,7 +140,7 @@ class Core():
         with open(self.path_name_index(), 'w') as file:
             json.dump(self.main_dictionary(), file, ensure_ascii=False, indent=4)
 
-    def close(self):
+    def close():
         ''' Remove object '''
         pass
 
@@ -155,86 +167,133 @@ class Core():
             self.name = attributes.get('name')
             self.description = attributes.get('description')
             self.index = attributes.get('index')
-
-            # Load properties
-            self.properties = index_json.get('Properties')
-
-            # Set log changes
-            self.changes = []
-
         else:
             print('File "index.json" not exist')
             
 
-class Sources():
+class Sources(Core):
     '''
-    It's a main class
+    It's a main singleton class
     '''
 
-    def __init__(self):
+    # Singleton pattern
+    __instance = None
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+    
+
+    def __init__(self, path='.', name='', description='Default description'):
         ''' Set up defaults attributes '''
+        super().__init__(path, name, description)
 
-        # Attributes
-        self.path = '.'
-        self.name = 'sources'
-        self.description = 'Default sources'
-        self.index = 'index.json'
 
-        # Sources
-        self.sources = dict(zip(
-            ['One', 'Two', 'Three'],
-            ['path_to_one/','path_to_two/','path_to_three/']
+class Source(Core):
+    '''
+    This class working with a particular data source
+    Source contains "indicators" and their history
+    Every source have got a "key": one or more "indicators"
+    It used as primary key for updating data source
+    '''
+
+    def __new__(cls, *args, **kwargs):
+        ''' Construct new object '''
+        return super().__new__(cls)
+    
+    def __init__(self, path='.', name='', description='Default description'):
+        ''' Set up defaults attributes of source'''
+
+        super().__init__(path, name, description)
+
+        # Key (unique indicator or combination of indicators)
+        self.key = []
+
+
+        # Working directories
+        self.source_directories()
+
+        # Data source
+        self.indicators = dict(zip(
+            ['indicator_1', 'indicator_2', 'indicator_3'],
+            ['path_to_1/','path_to_2/','path_to_3/']
             ))
 
         # log changes to buffer array:
         self.changes = []
 
 
-    def sources_path(self):
-        ''' Construct a full path to sources index-file '''
+    def source_path(self):
+        ''' Construct a full path to source index-file '''
         return self.path + '/' + self.name + '/'
 
+    def source_directories(self):
+        ''' Construct paths to working directories of data source '''
+        # main dir
+        source_path = self.source_path()
+        # all loaded data of source
+        self.load = source_path + 'load/'
+        # path for searching updates
+        self.upload = source_path + 'upload/'
+        self.upload_tmp = source_path + 'upload/tmp/'
+        # archive
+        self.archive = source_path + 'archive/'
+        return self.load, self.upload, self.upload_tmp, self.archive
 
     def index_path(self):
-        ''' Construct a full path to sources index-file '''
-        return self.sources_path() + self.index
+        ''' Construct a full path to source index-file '''
+        return self.source_path() + self.index
 
 
     def header(self):
         ''' Construct info '''
-        return 'Name of sources: ' + self.name + '\n'\
+        return 'Name of source: ' + self.name + '\n'\
                'Description: ' + self.description + '\n'\
                'Path to index-file: ' + self.index_path() + '\n'
 
 
     def attributes(self):
         ''' Construct list of main attributes '''
-        return dict(zip(['path', 'name', 'description', 'index'],
-                        [self.path, self.name, self.description, self.index]))
+        return dict(zip(['path', 'name', 'description', 'index', 'key'],
+               [self.path, self.name, self.description, self.index, self.key]))
 
 
     def set_new_path(self):
-        ''' Set a new pathname to sources '''
+        ''' Set a new pathname to source '''
         change = ['Change path', self.path]
         self.path = input('Set path: ')
+        # Change working directories
+        self.source_directories()
         change.append(self.path)
         self.changes.append(change)
 
 
     def set_new_name(self):
-        ''' Set a sources name '''
+        ''' Set a source name '''
         change = ['Change name', self.name]
         self.name = input('Set name: ')
+        # Change working directories
+        self.source_directories()
         change.append(self.name)
         self.changes.append(change)
 
 
     def set_new_description(self):
-        ''' Set a more abroad descripption of sources '''
+        ''' Set a more abroad descripption of source '''
         change = ['Change description', self.description]
         self.description = input('Input description of sources: ')
         change.append(self.description)
         self.changes.append(change)
+
+
+    def set_new_key(self):
+        ''' Set a source key (or keys) '''
+        change = ['Change key', self.key]
+        new_key = input('Set key: ')
+        self.key.append(new_key)
+        change.append(self.key)
+        self.changes.append(change)
+
 
     def set_new_index(self):
         ''' Set new index-file name. Never use it! For a testing only... '''
@@ -248,50 +307,57 @@ class Sources():
                        path=True,
                        name=True,
                        description=True,
+                       key=True,
                        index=False):
-        ''' Set a new group parametres for a sources '''
+        ''' Set a new group parametres for a source '''
         if path: self.set_new_path()
         if name: self.set_new_name()
         if description: self.set_new_description()
+        if key: self.set_new_key()
         # !!! Index-file always have a default name "index.json" !!!
         if index: self.set_new_index()
 
 
 
-    def open_sources(self, name='sources', path='.'):
+    def open_source(self, name='source', path='./sources'):
         '''
-        Open existing index-file and upload sources to buffer
+        Open existing index-file and upload source to buffer
         Set a change-counter in zero
         '''
         path_name = path + '/' + name + '/'
         if 'index.json' in os.listdir(path_name):
             with open(path_name + 'index.json', 'r') as index:
-                sources_attributes = json.load(index)
+                source_attributes = json.load(index)
 
             # Load attributes
-            attributes = sources_attributes.get('Attributes')
+            attributes = source_attributes.get('Attributes')
             self.path = attributes.get('path')
             self.name = attributes.get('name')
             self.description = attributes.get('description')
             self.index = attributes.get('index')
 
-            # Load sources
-            self.sources = sources_attributes.get('Sources')
+            self.key = attributes.get('key')
+
+            # Load indicators
+            self.indicators = source_attributes.get('Indicators')
 
             # Set log changes
             self.changes = []
+
+            # Working directories
+            self.source_directories()
 
         else:
             print('File "index.json" not exist')
 
 
-    def close_sources(self):
+    def close_source(self):
         ''' Remove object '''
         pass
 
 
-    def save_sources(self):
-        ''' Save data sources to hard drive '''
+    def save_source(self):
+        ''' Save data source to hard drive '''
         header = dict(
                  zip(
                  ['Name of sources',
@@ -303,29 +369,35 @@ class Sources():
 
         attributes = self.attributes()
 
-        sources = self.sources
+        indicators = self.indicators
 
-        dictionary = dict(zip(['Header', 'Attributes', 'Sources'],
-                              [header, attributes, sources]))
+        dictionary = dict(zip(['Header', 'Attributes', 'Indicators'],
+                              [header, attributes, indicators]))
 
-        makedir(self.sources_path())
+        makedir(self.source_path())
+
+        makedir(self.load)
+        makedir(self.upload)
+        makedir(self.upload_tmp)
+        makedir(self.archive)
+        
         with open(self.index_path(), 'w') as file:
             json.dump(dictionary, file, ensure_ascii=False, indent=4)
 
 
-    def save_sources_as(self):
-        ''' Save a new copy of data sources (rename and replace it) '''
+    def save_source_as(self):
+        ''' Save a new copy of data sources(rename and replace it) '''
         self.set_attributes()
-        self.save_sources()
+        self.save_source()
 
 
     def print_info(self):
-        ''' Output abstract information about data sources '''
+        ''' Output abstract information about data source '''
         print(self.header())
         print('Attributes:', self.attributes())
-        print('Sources:', self.sources)
+        print('Indicators:', self.indicators)
 
-    
+
     def check_updates(self):
         list_of_updates = []
         for filename in os.listdir(self.upload):
@@ -338,36 +410,6 @@ class Sources():
             return list_of_updates
         else:
             return False
-
-
-# Some actions with Sources()-class objects
-
-def create_sources():
-    srcs = Sources()
-    srcs.set_attributes()
-    return srcs
-
-
-def open_sources(name='sources', path='.'):
-    srcs = Sources()
-    srcs.open_sources(name, path)
-    return srcs
-
-
-def save_sources(srcs):
-    srcs.save_sources()
-
-
-def save_sources_as(srcs):
-    srcs.save_sources_as()
-
-
-def close_sources(srcs):
-    del srcs
-
-
-        # Change working directories
-        self.source_directories()
 
 # Some actions with Source()-class objects
 
@@ -420,4 +462,3 @@ class Position():
         self.key = key
         self.value = value
         self.dt = dt
-
