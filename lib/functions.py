@@ -26,3 +26,8 @@ def dirname():
 def makedir(path):
     if not os.path.exists(path): os.makedirs(path)
 
+
+def generate_id(n=10):
+    string = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    id = ''.join(random.choice(string) for i in range(n))
+    return id

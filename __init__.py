@@ -10,6 +10,9 @@ import time as tm
 
 import os
 import fnmatch
+import random
+import string
+
 
 import plotly.express as px
 from dash import Dash, html, dcc
@@ -27,7 +30,7 @@ class Core():
     It's an abstract class
     '''
 
-    
+
     def __new__(cls, *args, **kwargs):
         ''' Construct new object '''
         return super().__new__(cls)
@@ -54,7 +57,7 @@ class Core():
         del self.path, self.name, self.description, self.index
 
     # Aggregate main attributes
-    
+
     def path_name(self):
         ''' Construct a full path  '''
         return str(self.path) + str(self.name) + '/'
@@ -76,8 +79,8 @@ class Core():
                   self.description,
                   self.path_name_index()]))
         return header
-    
-        
+
+
     def __repr__(self):
         ''' Construct info to print '''
         return 'Name: ' + str(self.name) + '\n'\
@@ -95,8 +98,8 @@ class Core():
         ''' Construct dictionary of main attributes '''
         return dict(zip(['path', 'name', 'description', 'index'],
                         [self.path, self.name, self.description, self.index]))
- 
-    
+
+
     def main_dictionary(self):
         ''' Construct object as dictionary '''
         header = self.header()
@@ -104,7 +107,7 @@ class Core():
         dictionary = dict(zip(['Header', 'Attributes'],
                               [header, attributes]))
         return dictionary
-    
+
 
     # Methods, that change main attributes
 
@@ -133,7 +136,7 @@ class Core():
         if description: self.set_new_description()
 
     # Physical operations with object (open, save, remove, rename and other)
-    
+
     def save(self):
         ''' Save data to hard drive '''
         makedir(self.path_name())
@@ -169,7 +172,7 @@ class Core():
             self.index = attributes.get('index')
         else:
             print('File "index.json" not exist')
-            
+
 
 class Sources(Core):
     '''
@@ -182,13 +185,13 @@ class Sources(Core):
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
         return cls.__instance
-    
+
 
     def __init__(self, path='.', name='', description='Default description'):
         ''' Set up defaults attributes '''
         super().__init__(path, name, description)
 
-
+"""
 class Source(Core):
     '''
     This class working with a particular data source
@@ -200,7 +203,7 @@ class Source(Core):
     def __new__(cls, *args, **kwargs):
         ''' Construct new object '''
         return super().__new__(cls)
-    
+
     def __init__(self, path='.', name='', description='Default description'):
         ''' Set up defaults attributes of source'''
 
@@ -380,7 +383,7 @@ class Source(Core):
         makedir(self.upload)
         makedir(self.upload_tmp)
         makedir(self.archive)
-        
+
         with open(self.index_path(), 'w') as file:
             json.dump(dictionary, file, ensure_ascii=False, indent=4)
 
@@ -462,3 +465,6 @@ class Position():
         self.key = key
         self.value = value
         self.dt = dt
+"""
+###############################################################################
+
