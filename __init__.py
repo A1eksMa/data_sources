@@ -1,6 +1,7 @@
 # import libraries
 import pandas as pd
 import numpy as np
+import random
 
 import json
 
@@ -10,8 +11,7 @@ import time as tm
 
 import os
 import fnmatch
-import random
-import string
+#import string
 
 
 import plotly.express as px
@@ -23,6 +23,48 @@ warnings.filterwarnings('ignore')
 # import functions
 path_data_sources = os.path.dirname(os.path.abspath(__file__))
 exec(open(path_data_sources +'/lib/functions').read())
+
+class Node:
+    def __init__(self, node, parent=None, children=None):
+        self.node = node
+        self.parent = parent
+        self.children = children if children is not None else []
+
+    def add_child(self, child):
+        if not self.children:
+            self.children = [child]
+        else:
+            self.children.append(child)
+
+    def remove_child(self, child):
+        self.children.remove(child)
+
+    def preorder(self):
+        yield self
+        for child in self.children:
+            yield from child.preorder()
+
+    def traverse(self):
+        for child in self.children:
+            print(f"{child} ")
+            child.traverse()
+
+    def __repr__(self):
+        return f"Node({self.parent}, {self.children})"
+
+
+class Tree:
+    def __init__(self):
+        self.nodes = {}
+
+    def add_node(self, node):
+        self.nodes[node.name] = node
+
+    def get_node(self, name):
+        return self.nodes[name]
+
+    def remove_node(self, name):
+        pass
 
 
 class Core():
@@ -46,6 +88,22 @@ class Core():
         self.index = 'index.json'
 
         self.inners = self.get_inners()
+        self.__sid = generate_id()
+
+
+    @property
+    def sid(self):
+        return self.__sid
+
+
+    @sid.setter
+    def sid(self, sid):
+        self.__sid = sid
+
+
+    @sid.deleter
+    def sid(self):
+        del self.__sid
 
 
     def get_inners(self):
