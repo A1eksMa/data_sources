@@ -2,11 +2,11 @@
 def command_mode(unit = ''):
     log('#---------- command-mode ----------#', print_message = False)
     command = ''
-    while command != 'q':
+    while command not in ['q','quit','exit','logout']:
         command = input(unit + ' >>> ')
         log(command, print_message = False)
         try:
-            exec(command)
+            if command not in ['q','quit','exit','logout']: exec(command)
         except Exception as err:
             log(err)
     return
