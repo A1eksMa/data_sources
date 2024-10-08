@@ -1,9 +1,5 @@
-import json
-import shelve
 import unittest
-from pathlib import Path
-
-from source import Source
+from source import *
 
 
 class TestSourceMethods(unittest.TestCase):
@@ -13,27 +9,18 @@ class TestSourceMethods(unittest.TestCase):
         def wrapper(self):
             # create `test` folder
             path = Path.cwd() / 'test'
-            if not (path.exists() and path.is_dir()):
-                path.mkdir(parents=True, exist_ok=True)
-            # create `info.json`
-            data = {'type': 'Source()',
-                    'name': 'test',
-                    'description': 'Test case for unittest.',
-                    'keys': tuple(),
-                    'indicators': list()}
-            path_json = path / 'info.json'
-            with open(path_json, 'w') as file:
-                json.dump(data, file, ensure_ascii=False, indent=4)
-            # create `data.db`
-            path_data = path / 'data.db'
-            with shelve.open(path / 'data') as data:
-                pass
+            Source.new(path,
+                       'test',
+                       description='Test case for unittest.',
+                       )
 
             foo(self)
 
             # remove `data.db`
+            path_data = path / 'data.db'
             path_data.unlink()
             # remove `info.json`
+            path_json = path / 'info.json'
             path_json.unlink()
             # remove `test` folder.
             if path.is_dir() and not any(path.iterdir()): path.rmdir()
@@ -88,27 +75,49 @@ class TestSourceMethods(unittest.TestCase):
     def test_init_5(self):
         """ Test: access to `info` atribute. """
         path = Path.cwd() / 'test'
-        self.assertTrue(Source(path).info['type'] == 'Source()')
+        self.assertTrue(Source(path).info['type'] == 'Source')
         with self.assertRaises(KeyError): Source(path).info['qwerty']
 
 
     @example
     def test_bool_(self):
-        """ Test: empty instance (without attributes('path','info','data')
-        is False. """
+        """
+        Test empty instance (without attributes('path','info','data') is False.
+        """
         path = ''
         self.assertFalse(Source(path))
         path = Path.cwd() / 'test'
         self.assertTrue(Source(path))
 
     @example
-    def test_update_info_1(self):
+    def test_update_info(self):
         """ Test update_info() method. """
         path = Path.cwd() / 'test'
         src = Source(path)
         src.info['qwerty'] = 123
         src.update_info()
         self.assertEqual(Source(path).info['qwerty'], 123)
+
+    @example
+    def test_class_name(self):
+        """ Test class_name() method. """
+        path = Path.cwd() / 'test'
+        src = Source(path)
+        self.assertEqual(src.class_name(), 'Source')
+
+    @example
+    def test_types(self):
+        """ Test types of atributes. """
+        path = Path.cwd() / 'test'
+        src = Source(path)
+        self.assertTrue(isinstance(src, Source))
+        self.assertTrue(isinstance(src.path, Path))
+        self.assertTrue(isinstance(src.info, dict))
+        self.assertTrue(isinstance(src.info['type'], str))
+        self.assertTrue(isinstance(src.info['name'], str))
+        self.assertTrue(isinstance(src.info['description'], str))
+        self.assertTrue(isinstance(src.info['keys'], tuple))
+        self.assertTrue(isinstance(src.info['indicators'], list))
 
 if __name__ == '__main__':
     unittest.main()
