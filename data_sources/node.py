@@ -15,9 +15,10 @@ class Node():
     - система вложенных словарей `data`, в которой хранятся динамические данные.
 
     К статическим данным относятся атрибуты источника, которые:
-    а) определяются при создании источника и не изменяются со временем (название, ключи)
-    б) изменяются достаточно редко (путь к источнику, списки атрибутов)
-    в) имеют общий информативный характер (описания, статистика, метаданные)
+    а) определяются при создании источника
+    б)и не изменяются со временем (название, ключи)
+    в) изменяются достаточно редко (путь к источнику, списки атрибутов)
+    г) имеют общий информативный характер (описания, статистика, метаданные)
 
     К динамическим данным относятся значения показателей (indicators) источника данных.
     При этом: каждое из таких значений может быть представлено динамическим рядом
@@ -101,13 +102,13 @@ class Node():
         - info;
         - data.
 
-        True instance have all of three valid atributes.
         """
         return all(i in self.__dict__.keys() for i in ('path', 'info', 'data'))
 
     def __repr__(self):
         """
-        Print general info about instance.
+        Показывает общую информацию объекта (тип и метаданные).
+
         """
         s = str(type(self)) + "\n"
         for i, val in self.info.items():
@@ -122,7 +123,9 @@ class Node():
             indicators = list(),
             ):
         """
-        Create a new instance with a folder and files structure.
+        Создает новый объект,
+        а также структуру всех необходимых для него файлов и папок.
+
         """
         # create folder
         path = Path(path)
@@ -146,7 +149,8 @@ class Node():
 
     def class_name(self):
         """
-        Return name of class as a String.
+        Возвращает строку с именем класса.
+
         """
         s = str(type(self))    # smth like a "<class '__main__.Node'>"
         i = s[::-1].find(".")
@@ -155,7 +159,8 @@ class Node():
 
     def update_info(self):
         """
-        Rewrite `info.json` file from `self.info` atribute.
+        Перезаписывает файл `info.json` информацией из атрибута `self.info`.
+
         """
         path_json = self.path / _JSON
         with open(path_json, 'w') as file:
