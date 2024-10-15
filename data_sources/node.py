@@ -5,20 +5,20 @@ from pathlib import Path
 _JSON = 'info.json'
 _DATA = 'data' # for file name: `data.db`
 
-class Source():
+class Node():
     """
-    Класс Source() - это  соглашение о структуре данных
+    Класс Node() - это  соглашение о структуре данных
     и их месторасположении на физическом носителе.
 
-    Объект класса Source() можно предствить как набор словарей:
+    Объект класса Node() можно предствить как набор словарей:
     - словарь `info`, в котором хранятся статические данные;
     - система вложенных словарей `data`, в которой хранятся динамические данные.
-    
+
     К статическим данным относятся атрибуты источника, которые:
     а) определяются при создании источника и не изменяются со временем (название, ключи)
     б) изменяются достаточно редко (путь к источнику, списки атрибутов)
     в) имеют общий информативный характер (описания, статистика, метаданные)
-    
+
     К динамическим данным относятся значения показателей (indicators) источника данных.
     При этом: каждое из таких значений может быть представлено динамическим рядом
     (последовательностью, в отношении каждого элемента которой выполняются операции ранжирования:
@@ -27,7 +27,7 @@ class Source():
 
     Для операций с данными используются ТОЛЬКО нативные структуры python
     (без необходимости подключения внешних модулей или библиотек)!
-    
+
     Для записи и хранения данных используется  директория, указанная при инициализации объекта.
 
     Для записи и хранения статических данных используется модуль json,
@@ -39,13 +39,13 @@ class Source():
 
     `info` looks like a:
     {
-    type: "Source",
+    type: "Node",
     name: String,
     description: String,
     keys: tuple(str, str, str),
     indicators: list[str, str, str],
     }
-    
+
 
     `data` looks like a:
     {
@@ -54,7 +54,7 @@ class Source():
                    datetime(i+1): indicator,
                  }
     }
-    
+
     """
 
     def __init__(self, path: str):
@@ -66,14 +66,14 @@ class Source():
         - валидация данных (в случае отсутствия файлов для записи и хранения данных источника,
         они будут созданы).
 
-        В случае успешной инициализации создается экземпляр Source() со следующими атрибутами:
+        В случае успешной инициализации создается экземпляр Node() со следующими атрибутами:
         - path:  путь к директории источника данных, физическое расположение данных на жестком диске;
         - info: словарь, прочитанный из файла `info.json`;
         - data: объект shelve, связанный с файлом `data.db`.
 
-        В случае неуспешной инициализации экземпляр Source() не создается, код падает с исключением,
+        В случае неуспешной инициализации экземпляр Node() не создается, код падает с исключением,
         либо создается пустой объект (объект без перечисленных выше атрибутов).
-        
+
         """
         if path and Path(path).is_dir():
             self.path = Path(path)
@@ -100,7 +100,7 @@ class Source():
         - path;
         - info;
         - data.
-        
+
         True instance have all of three valid atributes.
         """
         return all(i in self.__dict__.keys() for i in ('path', 'info', 'data'))
@@ -129,7 +129,7 @@ class Source():
         if not (path.exists() and path.is_dir()):
             path.mkdir(parents=True, exist_ok=True)
         # create `info.json`
-        data = {'type': Source(path).class_name(),
+        data = {'type': Node(path).class_name(),
                 'name': name,
                 'description': description,
                 'keys': keys,
@@ -142,13 +142,13 @@ class Source():
         path_data = path / str(_DATA + '.db')
         with shelve.open(path / _DATA) as data:
             pass
-        return Source(path)
+        return Node(path)
 
     def class_name(self):
         """
         Return name of class as a String.
         """
-        s = str(type(self))    # smth like a "<class '__main__.Source'>"
+        s = str(type(self))    # smth like a "<class '__main__.Node'>"
         i = s[::-1].find(".")
         s = s[-i:-2]
         return s

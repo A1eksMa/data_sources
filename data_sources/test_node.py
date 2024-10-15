@@ -1,15 +1,15 @@
 import unittest
-from source import *
+from node import *
 
 
-class TestSourceMethods(unittest.TestCase):
+class TestNodeMethods(unittest.TestCase):
 
     def example(foo):
         """ Decorator, that create test example for `foo`. """
         def wrapper(self):
             # create `test` folder
             path = Path.cwd() / 'test'
-            Source.new(path,
+            Node.new(path,
                        'test',
                        description='Test case for unittest.',
                        )
@@ -32,51 +32,51 @@ class TestSourceMethods(unittest.TestCase):
     def test_init_1(self):
         """ Test: invalid types for a path raise a TypeError. """
         # Empty path
-        with self.assertRaises(TypeError): Source()
+        with self.assertRaises(TypeError): Node()
         # Path is an integer
         path = 123
-        with self.assertRaises(TypeError): Source(path)
+        with self.assertRaises(TypeError): Node(path)
         # Path is a tuple
         path = (123, 'qwerty')
-        with self.assertRaises(TypeError): Source(path)
+        with self.assertRaises(TypeError): Node(path)
         # Path is a tuple of Paths
         path = (Path.cwd(), Path.cwd())
-        with self.assertRaises(TypeError): Source(path)
+        with self.assertRaises(TypeError): Node(path)
 
     @example
     def test_init_2(self):
-        """ Test: Initializate Source() instans without `path` atribute. """
+        """ Test: Initializate Node() instans without `path` atribute. """
         # Fall-in-False path:
         path = ''
-        with self.assertRaises(AttributeError): Source(path).path
+        with self.assertRaises(AttributeError): Node(path).path
         path =()
-        with self.assertRaises(AttributeError): Source(path).path
+        with self.assertRaises(AttributeError): Node(path).path
         path = []
-        with self.assertRaises(AttributeError): Source(path).path
+        with self.assertRaises(AttributeError): Node(path).path
         path = False
-        with self.assertRaises(AttributeError): Source(path).path
+        with self.assertRaises(AttributeError): Node(path).path
         path = 0
-        with self.assertRaises(AttributeError): Source(path).path
+        with self.assertRaises(AttributeError): Node(path).path
         path = None
-        with self.assertRaises(AttributeError): Source(path).path
+        with self.assertRaises(AttributeError): Node(path).path
 
         # Folder path not exists
         path = 'qwerty'
-        with self.assertRaises(AttributeError): Source(path).path
+        with self.assertRaises(AttributeError): Node(path).path
 
     @example
     def test_init_4(self):
         """ Positive test: instance creates with a `path` atribute. """
         path = Path.cwd()
-        self.assertTrue(isinstance(Source(path), Source))
-        self.assertTrue(isinstance(Source(path).path, Path))
+        self.assertTrue(isinstance(Node(path), Node))
+        self.assertTrue(isinstance(Node(path).path, Path))
 
     @example
     def test_init_5(self):
         """ Test: access to `info` atribute. """
         path = Path.cwd() / 'test'
-        self.assertTrue(Source(path).info['type'] == 'Source')
-        with self.assertRaises(KeyError): Source(path).info['qwerty']
+        self.assertTrue(Node(path).info['type'] == 'Node')
+        with self.assertRaises(KeyError): Node(path).info['qwerty']
 
 
     @example
@@ -85,32 +85,32 @@ class TestSourceMethods(unittest.TestCase):
         Test empty instance (without attributes('path','info','data') is False.
         """
         path = ''
-        self.assertFalse(Source(path))
+        self.assertFalse(Node(path))
         path = Path.cwd() / 'test'
-        self.assertTrue(Source(path))
+        self.assertTrue(Node(path))
 
     @example
     def test_update_info(self):
         """ Test update_info() method. """
         path = Path.cwd() / 'test'
-        src = Source(path)
+        src = Node(path)
         src.info['qwerty'] = 123
         src.update_info()
-        self.assertEqual(Source(path).info['qwerty'], 123)
+        self.assertEqual(Node(path).info['qwerty'], 123)
 
     @example
     def test_class_name(self):
         """ Test class_name() method. """
         path = Path.cwd() / 'test'
-        src = Source(path)
-        self.assertEqual(src.class_name(), 'Source')
+        src = Node(path)
+        self.assertEqual(src.class_name(), 'Node')
 
     @example
     def test_types(self):
         """ Test types of atributes. """
         path = Path.cwd() / 'test'
-        src = Source(path)
-        self.assertTrue(isinstance(src, Source))
+        src = Node(path)
+        self.assertTrue(isinstance(src, Node))
         self.assertTrue(isinstance(src.path, Path))
         self.assertTrue(isinstance(src.info, dict))
         self.assertTrue(isinstance(src.info['type'], str))
