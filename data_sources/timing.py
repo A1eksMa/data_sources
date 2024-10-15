@@ -10,25 +10,52 @@ class Timing():
     dt: datetime
     ut: unix-time
     dts: datetime в формате строки
+    uts: unix-time в формате строкового отображения целого числа (милисекунды)
     uti: unix-time в формате целого числа (в милисикундах)
-    uts: unix-time в формате строкового отображения целого числа (в милисикундах)
-    
+
     """
 
     def __init__(self, dt = datetime.now()):
+        """
+        Инициализируется аргументом в формате datetime.
+        По умолчанию - текущим значением даты/времени.
+
+        Если тип переданного аргумента отличается от datetime,
+        пытается конвертировать его в тип datetime,
+        исходя из предположения, что переданное в качестве аргумента значение
+        совпадает с форматом одного из атрибутов.
+
+        Также можно инициализировать объект, передав кортеж из двух элементов,
+        первый из которых - строковое выражение даты/времени,
+        второе - шаблон для конвертации.
+        Для примера:
+        ('2020-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+
+        """
+        if not dt: raise AttributeError("Initialization with False argument.")
+
         # Date, time in datetime format
         # from datetime
         if isinstance(dt, datetime):
             self.dt = dt
         # from tuple
         # Tuple should be looks like a (value: str, pattern: str).
-        # For example:
-        # ('2020-01-01 00:00:00', '20'+'%y-%m-%d %H:%M:%S')
-        if isinstance(dt, tuple): 
+        if isinstance(dt, tuple):
+            if not dt[0]:
+                raise AttributeError("Initialization with False argument.")
             self.dt = datetime.strptime(dt[0], dt[1])
         # from string
         if isinstance(dt, str):
-            pass
+            if dt.isnumeric():
+                dt = int(dt)
+            else:
+                self.dt = datetime.strptime(dt, '%Y-%m-%d %H:%M:%S.%f')
+        # from integer
+        if isinstance(dt, int):
+            dt = str(dt)
+            dt = dt[:-6] + '.' + dt[-6]
+            dt = float(dt)
+            self.dt = datetime.fromtimestamp(dt)
 
         # Date, time in unix-time format
         self.ut = self.dt.timestamp()
@@ -36,12 +63,9 @@ class Timing():
         self.dts = self.dt_string()
         self.uts = self.ut_string()
         self.uti = self.ut_integer()
-        
-    def dt_string(self, pattern: str = '') -> str:
-        if pattern:
-            return self.dt.strftime(pattern)
-        else:
-            return str(self.dt)
+
+    def dt_string(self) -> str:
+        return str(self.dt)
 
     def ut_string(self) -> str:
         return str(int(self.ut*1000000))
