@@ -1,6 +1,9 @@
 import argparse
 import logging
 
+from lib import *
+
+
 def test():
     print('Test mode')
 
@@ -17,5 +20,4 @@ if __name__ == "__main__":
                         help='Test mode')
     args = parser.parse_args()
 
-    test() if args.test main()
-
+    test() if args.test else main()
