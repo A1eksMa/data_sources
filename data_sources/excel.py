@@ -45,7 +45,10 @@ class ExcelFile:
         return res if res else False
 
 
-    def get_dictionary(self):
+    def get_dictionary(self) -> dict[str,list]:
+        '''Returns dictionary from Excel file,
+        first row as keys,
+        other rows as list of values'''
         dictionary = {}
         for i in self.columns():
             dictionary.update({i[0]: i[1:]})
