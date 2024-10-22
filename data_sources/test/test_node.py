@@ -1,5 +1,8 @@
 import unittest
-from cls_node import *
+import sys
+sys.path.insert(0,'../')
+
+from lib.cls_node import *
 
 
 class TestNodeMethods(unittest.TestCase):

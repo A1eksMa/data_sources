@@ -1,5 +1,8 @@
 import unittest
-from cls_times import *
+import sys
+sys.path.insert(0,'../')
+
+from lib.cls_times import *
 
 
 
