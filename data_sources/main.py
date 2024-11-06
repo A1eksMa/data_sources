@@ -13,8 +13,13 @@ def main():
     print('Main mode')
     r = Row("test/row")
     print(r.info['keys'])
+    d = r.get_data(r.get_key('1730873584742642'))
+    for k1 in d.keys():
+        print("Indicator", k1)
+        for k2 in d[k1].keys():
+            print(k2, " : ", d[k1][k2])
     #r.upload("test/test_data/upd1.xlsx")
-    print(r.get_key('1730873584742642'))#.keys())
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage=__doc__)
