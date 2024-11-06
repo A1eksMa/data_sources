@@ -3,6 +3,10 @@
 Data-manager utility. Underconstruction.
 
 ## Digest
+
+### 2024-11-05
+Add Row() classi for storage imported data.
+
 ### 2024-10-22
 Start ExcelFile() for import data from excel.
 
