@@ -9,77 +9,54 @@ from lib.cls_times import *
 class TestTimes(unittest.TestCase):
 
     def example(foo):
-        """ Decorator, that create test example for `foo`. """
+        """ Decorator, that create test cases for `foo`. """
+      
         def wrapper(self):
-            foo(self)
+            # Examles
+            # datetime
+            a = datetime.now()
+            # tuple
+            b = ('2020-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+            # string(uti)
+            c = "1729001345584581"
+            # string (default datetime)
+            d = "2024-10-15 17:09:05.584581"
+            # Integer
+            e = 1729001345584581
+
+            # Default empty value:
+            t = Times()
+            # Initializated by datetime:
+            a = Times(a)
+            # Initializated by tuple:
+            b = Times(b)
+            # Initializated by string (uti):
+            c = Times(c)
+            # Initializated by string (default dt):
+            d = Times(d)
+            # Initializated by integer:
+            e = Times(e)
+
+            cases = (t,a,b,c,d,e)
+            
+            
+            foo(self, cases)
         return wrapper
 
     # Test
     @example
-    def test_times_init(self):
-        """ Test: Initializate Timing() instans. """
-        # Examles
-        # datetime
-        a = datetime.now()
-        # tuple
-        b = ('2020-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
-        # string(uti)
-        c = "1729001345584581"
-        # string (default datetime)
-        d = "2024-10-15 17:09:05.584581"
-        # Integer
-        e = 1729001345584581
-
-        # Default empty value:
-        t = Times()
-        # Initializated by datetime:
-        a = Times(a)
-        # Initializated by tuple:
-        b = Times(b)
-        # Initializated by string (uti):
-        c = Times(c)
-        # Initializated by string (default dt):
-        d = Times(d)
-        # Initializated by integer:
-        e = Times(e)
-
-        for i in (t,a,b,c,d,e):
+    def test_times_init(self,cases):
+        """ Test: Initializate Times() instans. """
+        for i in cases:
             self.assertTrue(isinstance(i, Times))
 
-
     @example
-    def test_times_atributes_type(self):
+    def test_times_atributes_type(self, cases):
         """
-        Test: types of atributes of Timing() instans
+        Test: types of atributes of Times() instans
         for each of initializate argument types.
         """
-
-        # Examles
-        # datetime
-        a = datetime.now()
-        # tuple
-        b = ('2020-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
-        # string(uti)
-        c = "1729001345584581"
-        # string (default datetime)
-        d = "2024-10-15 17:09:05.584581"
-        # Integer
-        e = 1729001345584581
-
-        # Default empty value:
-        t = Times()
-        # Initializated by datetime:
-        a = Times(a)
-        # Initializated by tuple:
-        b = Times(b)
-        # Initializated by string (uti):
-        c = Times(c)
-        # Initializated by string (default dt):
-        d = Times(d)
-        # Initializated by integer:
-        e = Times(e)
-
-        for i in (t,a,b,c,d,e):
+        for i in cases:
             self.assertTrue(isinstance(i.dt, datetime))
             self.assertTrue(isinstance(i.ut, float))
             self.assertTrue(isinstance(i.dts, str))

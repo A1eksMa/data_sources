@@ -10,7 +10,6 @@ class ExcelFile:
 
         # Open an Excel file from `file_path`
         self.workbook = openpyxl.load_workbook(file_path)
-
         # Open an Excel sheet from `workbook`
         if isinstance(sheet, int):
             self.worksheet = self.workbook.worksheets[sheet]
@@ -18,7 +17,6 @@ class ExcelFile:
             self.worksheet = self.workbook[sheet]
         else:
             raise TypeError('Worksheet type error')
-
 
     def rows(self):
         '''Returns list of rows'''
@@ -45,7 +43,7 @@ class ExcelFile:
         return res if res else False
 
 
-    def get_dictionary(self) -> dict[str,list]:
+    def dict(self) -> dict[str,list]:
         '''Returns dictionary from Excel file,
         first row as keys,
         other rows as list of values'''

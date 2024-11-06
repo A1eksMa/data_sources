@@ -1,0 +1,7 @@
+{
+    "type": "Row",
+    "name": "row_data",
+    "description": "Row data for updates",
+    "keys": ["Ind_1", "Ind_2"],
+    "indicators": []
+}

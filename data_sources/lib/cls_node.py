@@ -165,3 +165,29 @@ class Node():
         path_json = self.path / _JSON
         with open(path_json, 'w') as file:
             json.dump(self.info, file, ensure_ascii=False, indent=4)
+
+    def keys(self) -> list:
+        """
+        Возвращает список ключей словаря `data`.
+        
+        """
+        with shelve.open(self.path / 'data') as data:
+            return list(data.keys())
+
+    def get_key(self, k: str) -> dict:
+        """
+        Возвращает элемент словаря `data` по ключу.
+        
+        """
+        with shelve.open(self.path / 'data') as data:
+            return data[k]
+
+    def get_keys(self, keys: list) -> list:
+        """
+        Возвращает список элементов словаря `data` по списку ключей.
+        
+        """
+        with shelve.open(self.path / 'data') as data:
+            lst = []
+            for i in keys: lst.append(data[i])
+            return lst
