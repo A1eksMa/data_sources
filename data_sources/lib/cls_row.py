@@ -27,7 +27,7 @@ class Row(Node):
     Строки с данными содержат значения показателей.
 
     В структурах данных python под "квадратной таблицей" понимается словарь,
-    ключи которого - это оказатели источника данных ("indicators"),
+    ключи которого - это показатели источника данных ("indicators"),
     значения - списки одинаковой длины (значения показателей).
     
     В перспективе здесь же будут загрузчики из разного типа файлов,
@@ -36,11 +36,52 @@ class Row(Node):
     а также функции архивации, восстановления и удаления исходных данных.
         
     """
+    
+    def __init__(self, path: str):
+        """
+        Метод __init__ родительского класса устанавливает для
+        нового вновь создаваемого объекта структуру файлов и папок,
+        в том числе словарь `data` для хранения данных на жестком диске
+        и словарь `info` для хранения метаданных.
 
+        Помимо этого метод __init__ класса Row() устанавливает
+        два дополнительных атрибута:
+        start
+        final
+        
+        """
+        super().__init__(path)
+        
+        with shelve.open(self.path / 'start') as start:
+            # атрибут   хранит первоначальную "точку обновления"
+            # самый первый (из известных) момент загрузки данных
+            self.start = start
+            
+        with shelve.open(self.path / 'final') as final:
+            # атрибут `final` хранит итоговое состояние,
+            # с учетом всех загруженных "точек обновления"
+            self.final = final
+
+    def get_start_dt(self):
+        with shelve.open(self.path / 'start') as start:
+            return start['dt']
+
+    def get_start_data(self):
+        with shelve.open(self.path / 'start') as start:
+            return start['data']
+            
+    def get_final_dt(self):
+        with shelve.open(self.path / 'final') as final:
+            return final['dt']
+
+    def get_final_data(self):
+        with shelve.open(self.path / 'final') as final:
+            return final['data']   
+ 
     def upload(self, file_path):
         """
         Метод `upload` создает новую "точку обновления" - кадр данных,
-        на момент времени его получения. Он же: "окно данных" - "dataframe".
+        на момент времени его получения. Он же: "окно данных", он же "dataframe".
 
         В качестве аргумента метод принимает путь к файлу с данными,
         из которого будет получен словарь с данными.
@@ -49,10 +90,32 @@ class Row(Node):
         даты-времени в формате unixtime в милисикундах.
         
         """
-        
+        # фиксируем время обновления
         dt = Times()
+
+        # получаем данные для обновления в виде словаря
+        d = ExcelFile(file_path).dict()
+
+        # если это первоначальная точка обновления,
+        # записываем данные в атрибут `start`
+        with shelve.open(self.path / 'start') as start:
+            self.start = start
+            if not start:
+                self.start['dt'] = dt.uts
+                self.start['data'] = self.get_data(d)
+
+        # записываем данные обновления в атрибут `data`
         with shelve.open(self.path / 'data') as data:
-            data[dt.uts] = ExcelFile(file_path).dict()
+            data[dt.uts] = d
+
+        # для формирования итогового состояния
+        # с учетом информации предыдущих "точек обновления",
+        # накатываем данные поверх ранее записаных в атрибут `final`
+        with shelve.open(self.path / 'final') as final:
+            self.final = final
+            self.final['dt'] = dt.uts
+            self.final['data'] = self.get_data(d)
+            
 
     def get_data(self, d: dict) -> dict:
         """
@@ -69,7 +132,7 @@ class Row(Node):
         # Get object keys
         keys = self.info['keys']
         
-        # Check keys not empty and keys exist
+        # Check keys not empty and keys exist in row data
         if not keys: raise Error("Required keys is empty!")
             
         for k in keys:
@@ -100,4 +163,10 @@ class Row(Node):
                 data[k][keys_list[i]] = d[k][i]
         
         return data
+
+        def get_dataframe(self, dt):
+            """
+
+            """
+            pass
         

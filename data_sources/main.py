@@ -13,12 +13,22 @@ def main():
     print('Main mode')
     r = Row("test/row")
     print(r.info['keys'])
-    d = r.get_data(r.get_key('1730873584742642'))
-    for k1 in d.keys():
-        print("Indicator", k1)
-        for k2 in d[k1].keys():
-            print(k2, " : ", d[k1][k2])
-    #r.upload("test/test_data/upd1.xlsx")
+    
+    #r.upload("test/test_data/upd3.xlsx")
+
+    print(r.keys())
+    print("Test start attribute")
+    print(r.get_start_dt())
+    for k in r.get_start_data():
+        print(k)
+        print(r.get_start_data()[k])
+    print("Test final attribute")
+    print(r.get_final_dt())
+    for k in r.get_final_data():
+        print(k)
+        print(r.get_final_data()[k])
+
+
 
 
 if __name__ == "__main__":
