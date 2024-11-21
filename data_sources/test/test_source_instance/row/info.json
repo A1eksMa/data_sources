@@ -1,6 +1,6 @@
 {
     "type": "Row",
-    "name": "test_source_instance_row",
+    "name": "test_source_instance",
     "description": "Test case for unittest.",
     "keys": [],
     "indicators": []

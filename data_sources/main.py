@@ -2,8 +2,8 @@ import argparse
 #from lib.cls_node import Node
 #from lib.cls_times import Times
 #from lib.cls_excel import ExcelFile
-from lib.cls_row import Row
-
+#from lib.cls_row import Row
+from lib.cls_source import Source
 
 def test():
     print('Test mode')
@@ -11,11 +11,13 @@ def test():
 
 def main():
     print('Main mode')
-    r = Row("test/row")
-    print(r.info['keys'])
+    src = Source("test/test_source_instance")
+    print(src.info['type'])
+    #r = Row("test/row")
+    #print(r.info['keys'])
     
     #r.upload("test/test_data/upd3.xlsx")
-
+"""
     print(r.keys())
     print("Test start attribute")
     print(r.get_start_dt())
@@ -27,7 +29,7 @@ def main():
     for k in r.get_final_data():
         print(k)
         print(r.get_final_data()[k])
-
+"""
 
 
 

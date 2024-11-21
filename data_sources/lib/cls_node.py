@@ -7,6 +7,9 @@ _DATA = 'data' # for file name: `data.db`
 
 class Node():
     """
+    Класс Node() - это абстрактный класс, не имеющий собственной реализации.
+    Объектами класса выступают инстансы других классов, наследующие от Node().
+
     Класс Node() - это  соглашение о структуре данных
     и их месторасположении на физическом носителе.
 
@@ -16,7 +19,7 @@ class Node():
 
     К статическим данным относятся атрибуты источника, которые:
     а) определяются при создании источника
-    б)и не изменяются со временем (название, ключи)
+    б) не изменяются со временем (название, ключи)
     в) изменяются достаточно редко (путь к источнику, списки атрибутов)
     г) имеют общий информативный характер (описания, статистика, метаданные)
 
@@ -35,8 +38,6 @@ class Node():
     файл `info.json` расположен в директории, указанной при инициализации объекта.
     При каждом изменении статических данных файл обновляется (перезаписывается).
 
-    Для записи и хранения динамических данных используется модуль shelve,
-    файл `data.db` расположеный в директории, указанной при инициализации объекта.
 
     `info` looks like a:
     {
@@ -46,9 +47,13 @@ class Node():
     keys: tuple(str, str, str),
     indicators: list[str, str, str],
     }
+  
+
+    Для записи и хранения динамических данных используется модуль shelve,
+    файл `data.db` расположеный в директории, указанной при инициализации объекта.
 
 
-    `data` looks like a:
+    `data` looks like a (for example):
     {
     (key1, key2): { datetime(i-1): indicator,
                    datetime(i): indicator,
@@ -115,38 +120,6 @@ class Node():
             s += str(i) + ": " + str(val) +"\n"
         return s
 
-    @staticmethod
-    def new(path: str,
-            name: str,
-            description = str(),
-            keys = tuple(),
-            indicators = list(),
-            ):
-        """
-        Создает новый объект,
-        а также структуру всех необходимых для него файлов и папок.
-
-        """
-        # create folder
-        path = Path(path)
-        if not (path.exists() and path.is_dir()):
-            path.mkdir(parents=True, exist_ok=True)
-        # create `info.json`
-        data = {'type': Node(path).class_name(),
-                'name': name,
-                'description': description,
-                'keys': keys,
-                'indicators': indicators,
-                }
-        path_json = path / _JSON
-        with open(path_json, 'w') as file:
-            json.dump(data, file, ensure_ascii=False, indent=4)
-        # create `data.db`
-        path_data = path / str(_DATA + '.db')
-        with shelve.open(path / _DATA) as data:
-            pass
-        return Node(path)
-
     def class_name(self):
         """
         Возвращает строку с именем класса.
@@ -191,3 +164,35 @@ class Node():
             lst = []
             for i in keys: lst.append(data[i])
             return lst
+
+    @staticmethod
+    def new(path: str,
+            name: str,
+            type_node = str("Node"),
+            description = str(),
+            keys = tuple(),
+            indicators = list(),
+            ):
+        """
+        Создает новую ноду, а также структуру всех необходимых файлов и папок.
+
+        """
+        # create folder
+        path = Path(path)
+        if not (path.exists() and path.is_dir()):
+            path.mkdir(parents=True, exist_ok=True)
+        # create `info.json`
+        data = {'type': type_node,
+                'name': name,
+                'description': description,
+                'keys': keys,
+                'indicators': indicators,
+                }
+        path_json = path / _JSON
+        with open(path_json, 'w') as file:
+            json.dump(data, file, ensure_ascii=False, indent=4)
+        # create `data.db`
+        path_data = path / str(_DATA + '.db')
+        with shelve.open(path / _DATA) as data:
+            pass
+        return Node(path)
